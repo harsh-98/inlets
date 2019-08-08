@@ -20,12 +20,12 @@ var inletsCmd = &cobra.Command{
 	Use:   "inlets",
 	Short: "Expose your local endpoints to the Internet.",
 	Long: `
-Inlets combines a reverse proxy and websocket tunnels to expose your internal and development 
+Inlets combines a reverse proxy and websocket tunnels to expose your internal and development
 endpoints to the public Internet via an exit-node.
 
 An exit-node may be a 5-10 USD VPS or any other computer with an IPv4 IP address.
 
-See: https://github.com/alexellis/inlets for more information.`,
+See: https://github.com/harsh-98/inlets for more information.`,
 	Run: parseBaseCommand,
 }
 

@@ -1,12 +1,12 @@
 #!/bin/bash
 # This script was adapted from https://github.com/openfaas/cli.openfaas.com/blob/master/get.sh
 
-version=$(curl -sI https://github.com/alexellis/inlets/releases/latest | grep Location | awk -F"/" '{ printf "%s", $NF }' | tr -d '\r')
+version=$(curl -sI https://github.com/harsh-98/inlets/releases/latest | grep Location | awk -F"/" '{ printf "%s", $NF }' | tr -d '\r')
 
 if [ ! $version ]; then
     echo "Failed while attempting to install inlets. Please manually install:"
     echo ""
-    echo "1. Open your web browser and go to https://github.com/alexellis/inlets/releases"
+    echo "1. Open your web browser and go to https://github.com/harsh-98/inlets/releases"
     echo "2. Download the latest release for your platform. Call it 'inlets'."
     echo "3. chmod +x ./inlets"
     echo "4. mv ./inlets /usr/local/bin"
@@ -68,7 +68,7 @@ getPackage() {
         rm $targetFile
     fi
 
-    url=https://github.com/alexellis/inlets/releases/download/$version/inlets$suffix
+    url=https://github.com/harsh-98/inlets/releases/download/$version/inlets$suffix
     echo "Downloading package $url as $targetFile"
 
     curl -sSL $url --output $targetFile

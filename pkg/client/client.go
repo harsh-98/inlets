@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/alexellis/inlets/pkg/transport"
+	"github.com/harsh-98/inlets/pkg/transport"
 	"github.com/rancher/remotedialer"
 	"github.com/twinj/uuid"
 )
@@ -42,7 +42,6 @@ func (c *Client) Connect() error {
 	if !strings.HasPrefix(url, "ws") {
 		url = "ws://" + url
 	}
-	for {
-		remotedialer.ClientConnect(url+"/tunnel", headers, nil, allowsAllow, nil)
-	}
+	remotedialer.ClientConnect(url+"/tunnel", headers, nil, allowsAllow, nil)
+	return nil
 }

@@ -6,26 +6,63 @@ import (
 	"net"
 	"net/http"
 	"time"
+	"context"
+	"os"
+	"strings"
 
-	"github.com/alexellis/inlets/pkg/router"
-	"github.com/alexellis/inlets/pkg/transport"
+	"github.com/harsh-98/inlets/pkg/router"
+	"github.com/harsh-98/inlets/pkg/transport"
 	"github.com/rancher/remotedialer"
 	"github.com/twinj/uuid"
 	"k8s.io/apimachinery/pkg/util/proxy"
+
+	"github.com/joho/godotenv"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/bson"
+    "go.mongodb.org/mongo-driver/mongo/options"
 )
 
 // Server for the exit-node of inlets
 type Server struct {
 	Port   int
-	Token  string
 	router router.Router
 	server *remotedialer.Server
-
+	mClient *mongo.Client
 	DisableWrapTransport bool
+}
+func mongoClient()*mongo.Client{
+	if err := godotenv.Load(); err != nil {
+        log.Print("No .env file found")
+	}
+	mongoUrl := getMongoUrl()
+	client, _ := mongo.NewClient(options.Client().ApplyURI(mongoUrl))
+
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	_ = client.Connect(ctx)
+
+	return client
+}
+func (s *Server)getToken(token string, t *bson.M) {
+	collection := s.mClient.Database("test").Collection("tokens")
+	filter := bson.M{"token": token}
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	err := collection.FindOne(ctx, filter).Decode(&t)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+func getMongoUrl() string{
+	MONGOURL, exists := os.LookupEnv("MONGOURL")
+
+    if exists {
+	return MONGOURL
+	}
+	return ""
 }
 
 // Serve traffic
 func (s *Server) Serve() {
+	s.mClient = mongoClient()
 	s.server = remotedialer.New(s.authorized, remotedialer.DefaultErrorWriter)
 	s.router.Server = s.server
 
@@ -44,6 +81,7 @@ func (s *Server) tunnel(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) proxy(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(r.Host)
 	route := s.router.Lookup(r)
 	if route == nil {
 		w.WriteHeader(http.StatusServiceUnavailable)
@@ -74,7 +112,12 @@ func (s *Server) dialerFor(id, host string) remotedialer.Dialer {
 
 func (s *Server) tokenValid(req *http.Request) bool {
 	auth := req.Header.Get("Authorization")
-	return len(s.Token) == 0 || auth == "Bearer "+s.Token
+	var t bson.M
+	token:=strings.Split(auth, " ")[1]
+	fmt.Println(token)
+	s.getToken(token, &t)
+	fmt.Println(t["revoked"] != true)
+	return t["revoked"] != true
 }
 
 func (s *Server) authorized(req *http.Request) (id string, ok bool, err error) {

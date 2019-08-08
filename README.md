@@ -2,7 +2,7 @@
 
 Expose your local endpoints to the Internet
 
-[![Build Status](https://travis-ci.org/alexellis/inlets.svg?branch=master)](https://travis-ci.org/alexellis/inlets) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![Go Report Card](https://goreportcard.com/badge/github.com/alexellis/inlets)](https://goreportcard.com/report/github.com/alexellis/inlets) [![Documentation](https://godoc.org/github.com/alexellis/inlets?status.svg)](http://godoc.org/github.com/alexellis/inlets)
+[![Build Status](https://travis-ci.org/alexellis/inlets.svg?branch=master)](https://travis-ci.org/alexellis/inlets) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![Go Report Card](https://goreportcard.com/badge/github.com/harsh-98/inlets)](https://goreportcard.com/report/github.com/harsh-98/inlets) [![Documentation](https://godoc.org/github.com/harsh-98/inlets?status.svg)](http://godoc.org/github.com/harsh-98/inlets)
 
 ## Intro
 
@@ -45,7 +45,7 @@ Become an Insider to receive regular *Insider Updates* on inlets, and all his ot
 * discover and configure endpoints for `Ingress` definitions from [Kubernetes](https://kubernetes.io)
 * configuration to run "exit-node" as serverless container with Azure ACI / AWS Fargate
 * configure staging or production LetsEncrypt issuer using DNS01 challenge
-* [get a logo for the project](https://github.com/alexellis/inlets/issues/46)
+* [get a logo for the project](https://github.com/harsh-98/inlets/issues/46)
 
 #### Non-goals:
 
@@ -123,7 +123,7 @@ brew install inlets
 
 > Note: the `brew` distribution is maintained by the brew team, so it may lag a little behind the GitHub release.
 
-Binaries are made available on the [releases page](https://github.com/alexellis/inlets/releases) for Linux (x86_64, armhf & arm64) and for Darwin (MacOS). You will also find SHA checksums available if you want to verify your download.
+Binaries are made available on the [releases page](https://github.com/harsh-98/inlets/releases) for Linux (x86_64, armhf & arm64) and for Darwin (MacOS). You will also find SHA checksums available if you want to verify your download.
 
 ### Test it out
 
@@ -257,8 +257,8 @@ For development you will need Golang 1.10 or 1.11 on both the exit-node or serve
 You can get the code like this:
 
 ```bash
-go get -u github.com/alexellis/inlets
-cd $GOPATH/src/github.com/alexellis/inlets
+go get -u github.com/harsh-98/inlets
+cd $GOPATH/src/github.com/harsh-98/inlets
 ```
 
 Contributions are welcome. All commits must be signed-off with `git commit -s` to accept the [Developer Certificate of Origin](https://developercertificate.org).

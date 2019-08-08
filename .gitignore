@@ -2,3 +2,4 @@ bin
 .vscode
 inlets*
 !inlets.go
+.env
