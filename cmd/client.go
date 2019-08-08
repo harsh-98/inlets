@@ -13,7 +13,7 @@ import (
 
 func init() {
 	inletsCmd.AddCommand(clientCmd)
-	clientCmd.Flags().StringP("remote", "r", "127.0.0.1:8000", "server address i.e. 127.0.0.1:8000")
+	clientCmd.Flags().StringP("remote", "r", "52.187.64.208", "server address i.e. 127.0.0.1:8000")
 	clientCmd.Flags().StringP("upstream", "u", "", "upstream server i.e. http://127.0.0.1:3000")
 	clientCmd.Flags().StringP("token", "t", "", "authentication token")
 	clientCmd.Flags().StringP("token-from", "f", "", "read the authentication token from a file")
@@ -42,7 +42,12 @@ func buildUpstreamMap(args string) map[string]string {
 		if len(kvp) == 1 {
 			items[""] = strings.TrimSpace(kvp[0])
 		} else {
-			items[strings.TrimSpace(kvp[0])] = strings.TrimSpace(kvp[1])
+			remoteEndpoint:= strings.TrimSpace(kvp[0])
+			if len(strings.Split(remoteEndpoint, ".")) == 1 {
+				items[strings.TrimSpace(kvp[0])] = strings.TrimSpace(kvp[1])
+			} else {
+				log.Fatal("RemoteEndpoint is not relative domain")
+			}
 		}
 	}
 	return items

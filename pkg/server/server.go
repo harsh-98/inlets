@@ -60,6 +60,24 @@ func getMongoUrl() string{
 	return ""
 }
 
+var timer = map[string]time.Time{}
+
+func (s *Server)updateUseTime(token string, t int) {
+	collection := s.mClient.Database("test").Collection("tokens")
+	filter := bson.M{"token": token}
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	update:= bson.D{
+		{"$inc", bson.D{
+			{"useTime", t},
+		}},
+	}
+	result, err := collection.UpdateOne(ctx, filter, update)
+	fmt.Print(result)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
 // Serve traffic
 func (s *Server) Serve() {
 	s.mClient = mongoClient()
@@ -77,7 +95,14 @@ func (s *Server) Serve() {
 
 func (s *Server) tunnel(w http.ResponseWriter, r *http.Request) {
 	s.server.ServeHTTP(w, r)
+	token:=getTokenFromHeader(r.Header)
+	newTime:=time.Now()
+	elapsed := newTime.Sub(timer[token]).Seconds()
+	timeInt := int(elapsed)
+	fmt.Println(timeInt)
+	s.updateUseTime(token,timeInt)
 	s.router.Remove(r)
+
 }
 
 func (s *Server) proxy(w http.ResponseWriter, r *http.Request) {
@@ -109,15 +134,19 @@ func (s *Server) dialerFor(id, host string) remotedialer.Dialer {
 		return s.server.Dial(id, time.Minute, network, host)
 	}
 }
-
+func getTokenFromHeader(h http.Header)string{
+	return strings.Split(h.Get("Authorization"), " ")[1]
+}
 func (s *Server) tokenValid(req *http.Request) bool {
-	auth := req.Header.Get("Authorization")
+	token:= getTokenFromHeader(req.Header)
 	var t bson.M
-	token:=strings.Split(auth, " ")[1]
 	fmt.Println(token)
 	s.getToken(token, &t)
-	fmt.Println(t["revoked"] != true)
-	return t["revoked"] != true
+	if (t["revoked"] != true) {
+		timer[token] = time.Now()
+		fmt.Println(timer[token])
+	}
+	return t["revoked"] != true && t["planAmount"].(int32) >= t["useTime"].(int32)
 }
 
 func (s *Server) authorized(req *http.Request) (id string, ok bool, err error) {
