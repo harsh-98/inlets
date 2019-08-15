@@ -7,6 +7,7 @@ import (
 	"strings"
 	"sync"
 	"time"
+	"fmt"
 
 	"github.com/harsh-98/inlets/pkg/transport"
 	"github.com/rancher/remotedialer"
@@ -122,7 +123,7 @@ func (r *Router) Add(req *http.Request) string {
 		}
 		targets = append(targets, target{
 			id:     id,
-			domain: parts[0],
+			domain: fmt.Sprintf("%s.tunzal.ml", parts[0]),
 			target: parts[1],
 		})
 	}

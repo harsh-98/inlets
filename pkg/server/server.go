@@ -12,6 +12,7 @@ import (
 
 	"github.com/harsh-98/inlets/pkg/router"
 	"github.com/harsh-98/inlets/pkg/transport"
+	"github.com/harsh-98/inlets/pkg/domain"
 	"github.com/rancher/remotedialer"
 	"github.com/twinj/uuid"
 	"k8s.io/apimachinery/pkg/util/proxy"
@@ -107,6 +108,7 @@ func (s *Server) tunnel(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) proxy(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(r.Host)
+	fmt.Println(r.Host)
 	route := s.router.Lookup(r)
 	if route == nil {
 		w.WriteHeader(http.StatusServiceUnavailable)
@@ -146,7 +148,7 @@ func (s *Server) tokenValid(req *http.Request) bool {
 		timer[token] = time.Now()
 		fmt.Println(timer[token])
 	}
-	return t["revoked"] != true && t["planAmount"].(int32) >= t["useTime"].(int32)
+	return t["revoked"] != true && (t["planAmount"].(int32))*60 >= t["useTime"].(int32)
 }
 
 func (s *Server) authorized(req *http.Request) (id string, ok bool, err error) {
@@ -164,6 +166,6 @@ func (s *Server) authorized(req *http.Request) (id string, ok bool, err error) {
 	if !s.tokenValid(req) {
 		return "", false, nil
 	}
-
+	domain.RegisterDomain(req)
 	return s.router.Add(req), true, nil
 }

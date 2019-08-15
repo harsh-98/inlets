@@ -4,14 +4,21 @@ import (
 	"net/http"
 	"strings"
 	"os/exec"
+	"os"
 	"fmt"
 
 	"github.com/harsh-98/inlets/pkg/transport"
 )
-const (
-	InletsHeader   = "x-inlets-id"
-	UpstreamHeader = "x-inlets-upstream"
-)
+
+func getDomainCmd() string{
+	DOMAINCMD, exists := os.LookupEnv("DOMAINCMD")
+
+    if exists {
+	return DOMAINCMD
+	}
+	return ""
+}
+
 func RegisterDomain(req *http.Request){
 	upstreams := req.Header[http.CanonicalHeaderKey(transport.UpstreamHeader)]
 
@@ -20,11 +27,15 @@ func RegisterDomain(req *http.Request){
 		if len(parts) != 2 {
 			continue
 		}
+		args:= fmt.Sprintf(getDomainCmd(), parts[0])
+		command:= strings.Split(args, " ")
 
-		cmd := exec.Command("az", fmt.Sprintf("network dns record-set a add-record -g Blockchain -z tunzal.ml -n %s  -a 52.187.64.208", parts[0]))
-		err := cmd.Run()
+		cmd := exec.Command(command[0], command[1:]...)
+		stdoutStderr, err := cmd.CombinedOutput()
 		if err != nil {
-			fmt.Errorf("cmd.Run() failed with %s\n", err)
+			fmt.Errorf("%s", err)
 		}
+		// do something with output
+		fmt.Printf("%s\n", stdoutStderr)
 	}
 }

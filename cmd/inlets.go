@@ -17,7 +17,7 @@ func init() {
 
 // inletsCmd represents the base command when called without any sub commands.
 var inletsCmd = &cobra.Command{
-	Use:   "inlets",
+	Use:   "tunzalctl",
 	Short: "Expose your local endpoints to the Internet.",
 	Long: `
 Inlets combines a reverse proxy and websocket tunnels to expose your internal and development
