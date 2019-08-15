@@ -31,13 +31,13 @@ func (c *Client) Connect() error {
 	headers := http.Header{}
 	headers.Set(transport.InletsHeader, uuid.Formatter(uuid.NewV4(), uuid.FormatHex))
 	for k, v := range c.UpstreamMap {
-		headers.Add(transport.UpstreamHeader, fmt.Sprintf("%s.tunzal.ml=%s", k, v))
+		headers.Add(transport.UpstreamHeader, fmt.Sprintf("%s=%s", k, v))
 	}
 	if c.Token != "" {
 		headers.Add("Authorization", "Bearer "+c.Token)
 	}
 
-	fmt.Println(headers)
+	// fmt.Println(headers)
 	url := c.Remote
 	if !strings.HasPrefix(url, "ws") {
 		url = "ws://" + url

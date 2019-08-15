@@ -1,4 +1,4 @@
-package cmd
+package client
 
 import (
 	"fmt"
@@ -11,8 +11,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var (
+	Version   string
+	GitCommit string
+)
+
 func init() {
-	inletsCmd.AddCommand(clientCmd)
 	clientCmd.Flags().StringP("remote", "r", "52.187.64.208", "server address i.e. 127.0.0.1:8000")
 	clientCmd.Flags().StringP("upstream", "u", "", "upstream server i.e. http://127.0.0.1:3000")
 	clientCmd.Flags().StringP("token", "t", "", "authentication token")
@@ -55,7 +59,7 @@ func buildUpstreamMap(args string) map[string]string {
 
 // clientCmd represents the client sub command.
 var clientCmd = &cobra.Command{
-	Use:   "client",
+	Use:   "tunzalctl",
 	Short: "Start the tunnel client.",
 	Long: `Start the tunnel client.
 
@@ -78,7 +82,7 @@ func runClient(cmd *cobra.Command, _ []string) error {
 	argsUpstreamParser := ArgsUpstreamParser{}
 	upstreamMap := argsUpstreamParser.Parse(upstream)
 	for k, v := range upstreamMap {
-		log.Printf("Upstream: %s => %s\n", k, v)
+		log.Printf("Upstream: %s.tunzal.ml => %s\n", k, v)
 	}
 
 	remote, err := cmd.Flags().GetString("remote")
@@ -124,5 +128,17 @@ func runClient(cmd *cobra.Command, _ []string) error {
 		return err
 	}
 
+	return nil
+}
+
+func Execute(version, gitCommit string) error {
+
+	// Get Version and GitCommit values from main.go.
+	Version = version
+	GitCommit = gitCommit
+
+	if err := clientCmd.Execute(); err != nil {
+		return err
+	}
 	return nil
 }
